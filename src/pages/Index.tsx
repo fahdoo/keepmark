@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Bookmark, Search, Sparkles, Palette, MessageCircle, Trash2, ExternalLink, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -25,8 +26,8 @@ const Index = () => {
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 py-4 max-w-5xl mx-auto">
         <span className="text-2xl font-bold font-serif text-foreground tracking-tight">shiori</span>
-        <Button variant="outline" size="sm" className="rounded-full">
-          Sign in
+        <Button variant="outline" size="sm" className="rounded-full" asChild>
+          <Link to="/auth">Sign in</Link>
         </Button>
       </nav>
 
@@ -55,8 +56,8 @@ const Index = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
         >
-          <Button size="lg" className="rounded-full px-8 text-base font-medium">
-            Get started — it's free
+          <Button size="lg" className="rounded-full px-8 text-base font-medium" asChild>
+            <Link to="/auth">Get started — it's free</Link>
           </Button>
         </motion.div>
 
