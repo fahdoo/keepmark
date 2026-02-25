@@ -41,7 +41,7 @@ const Auth = () => {
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
       <Card className="w-full max-w-sm border-border/60">
         <CardContent className="p-6">
-          <h1 className="text-3xl font-serif text-foreground mb-1 text-center">shiori</h1>
+          <h1 className="text-3xl font-serif text-foreground mb-1 text-center">keepmark</h1>
           <p className="text-sm text-muted-foreground text-center mb-6">
             {isSignUp ? "Create your account" : "Welcome back"}
           </p>

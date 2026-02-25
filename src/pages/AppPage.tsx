@@ -203,7 +203,7 @@ const AppPage = () => {
       {/* Header */}
       <header className="border-b border-border">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-          <span className="text-xl font-serif font-bold text-foreground">shiori</span>
+          <span className="text-xl font-serif font-bold text-foreground">keepmark</span>
           <div className="flex items-center gap-2">
             {isPro && (
               <>
