@@ -1,8 +1,10 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
 
 const sampleBookmarks = [
   { title: "How to Build a Second Brain", domain: "fortelabs.com", time: "2h ago" },
@@ -12,6 +14,22 @@ const sampleBookmarks = [
 ];
 
 const Index = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) navigate("/app");
+      else setLoading(false);
+    });
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) navigate("/app");
+      else setLoading(false);
+    });
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  if (loading) return null;
   return (
     <div className="min-h-screen bg-background">
       {/* Nav */}
