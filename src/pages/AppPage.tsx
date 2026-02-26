@@ -25,7 +25,7 @@ type BookmarkRow = {
 };
 
 const THEMES = [
-  { name: "Cream", bg: "36 33% 96%", fg: "24 20% 20%", accent: "24 80% 55%" },
+  { name: "Magenta", bg: "320 15% 95%", fg: "320 20% 15%", accent: "320 45% 45%" },
   { name: "Ocean", bg: "210 30% 96%", fg: "210 25% 15%", accent: "210 70% 50%" },
   { name: "Forest", bg: "140 20% 95%", fg: "140 20% 15%", accent: "140 50% 40%" },
   { name: "Lavender", bg: "270 25% 96%", fg: "270 20% 18%", accent: "270 55% 55%" },
