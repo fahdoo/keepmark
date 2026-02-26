@@ -12,24 +12,66 @@ serve(async (req) => {
     const { url } = await req.json();
     if (!url) throw new Error("URL is required");
 
+    const apiKey = Deno.env.get("FIRECRAWL_API_KEY");
+
+    // If Firecrawl is configured, use it for rich metadata
+    if (apiKey) {
+      console.log("Using Firecrawl for metadata extraction:", url);
+      const response = await fetch("https://api.firecrawl.dev/v1/scrape", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          url,
+          formats: ["markdown", "summary"],
+          onlyMainContent: true,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const metadata = data.data?.metadata || data.metadata || {};
+        const summary = data.data?.summary || data.summary || null;
+
+        return new Response(
+          JSON.stringify({
+            title: metadata.title || metadata.ogTitle || null,
+            description: metadata.description || metadata.ogDescription || null,
+            summary,
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      console.error("Firecrawl error, falling back:", response.status);
+    }
+
+    // Fallback: basic HTML fetch
+    console.log("Using basic fetch for metadata:", url);
     const response = await fetch(url, {
-      headers: { "User-Agent": "Mozilla/5.0 (compatible; Shiori/1.0)" },
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; Keepmark/1.0)" },
       redirect: "follow",
     });
     const html = await response.text();
 
-    // Extract title
     const titleMatch = html.match(/<title[^>]*>([^<]*)<\/title>/i);
     const ogTitleMatch = html.match(/<meta[^>]*property=["']og:title["'][^>]*content=["']([^"']*)["']/i);
-    const title = ogTitleMatch?.[1] || titleMatch?.[1] || null;
+    const descMatch = html.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']*)["']/i);
+    const ogDescMatch = html.match(/<meta[^>]*property=["']og:description["'][^>]*content=["']([^"']*)["']/i);
 
-    return new Response(JSON.stringify({ title: title?.trim() }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({
+        title: (ogTitleMatch?.[1] || titleMatch?.[1] || null)?.trim(),
+        description: (ogDescMatch?.[1] || descMatch?.[1] || null)?.trim(),
+        summary: null,
+      }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   } catch (e) {
-    return new Response(JSON.stringify({ title: null, error: e.message }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ title: null, description: null, summary: null, error: e.message }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   }
 });
