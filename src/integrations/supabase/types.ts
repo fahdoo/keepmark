@@ -18,9 +18,11 @@ export type Database = {
         Row: {
           archived: boolean
           created_at: string
+          description: string | null
           domain: string | null
           favicon_url: string | null
           id: string
+          summary: string | null
           title: string | null
           url: string
           user_id: string
@@ -28,9 +30,11 @@ export type Database = {
         Insert: {
           archived?: boolean
           created_at?: string
+          description?: string | null
           domain?: string | null
           favicon_url?: string | null
           id?: string
+          summary?: string | null
           title?: string | null
           url: string
           user_id: string
@@ -38,9 +42,11 @@ export type Database = {
         Update: {
           archived?: boolean
           created_at?: string
+          description?: string | null
           domain?: string | null
           favicon_url?: string | null
           id?: string
+          summary?: string | null
           title?: string | null
           url?: string
           user_id?: string
