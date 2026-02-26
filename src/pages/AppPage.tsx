@@ -18,6 +18,8 @@ type BookmarkRow = {
   title: string | null;
   favicon_url: string | null;
   domain: string | null;
+  description: string | null;
+  summary: string | null;
   archived: boolean;
   created_at: string;
 };
@@ -88,15 +90,19 @@ const AppPage = () => {
       const domain = extractDomain(url);
       const faviconUrl = `https://www.google.com/s2/favicons?sz=32&domain=${domain}`;
 
-      // Try to fetch title via edge function
+      // Try to fetch metadata via edge function
       let title = domain;
+      let description: string | null = null;
+      let summary: string | null = null;
       try {
         const { data } = await supabase.functions.invoke("fetch-metadata", { body: { url } });
         if (data?.title) title = data.title;
+        if (data?.description) description = data.description;
+        if (data?.summary) summary = data.summary;
       } catch { /* fallback to domain */ }
 
       const { error } = await supabase.from("bookmarks").insert({
-        url, title, domain, favicon_url: faviconUrl, user_id: session.user.id,
+        url, title, domain, favicon_url: faviconUrl, description, summary, user_id: session.user.id,
       });
       if (error) throw error;
       setNewUrl("");
@@ -349,7 +355,9 @@ const AppPage = () => {
                   <p className="text-sm font-medium text-foreground truncate hover:text-primary transition-colors">
                     {b.title || b.domain || b.url}
                   </p>
-                  <p className="text-xs text-muted-foreground">{b.domain}</p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {b.summary || b.description || b.domain}
+                  </p>
                 </a>
                 <span className="text-xs text-muted-foreground whitespace-nowrap flex items-center gap-1">
                   <Clock className="w-3 h-3" />{timeAgo(b.created_at)}
